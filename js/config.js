@@ -35,6 +35,8 @@ const CATEGORY_LIST = [
 
 
 const LOCATION_LIST = [
+  "BONING AREA",
+  "BOXING ROOM",
   "CHEMICAL ROOM",
   "DRY STORAGE",
   "FREEZER",
@@ -47,3 +49,4 @@ const LOCATION_LIST = [
   "SPICE ROOM",
   "TRAILER",
 ];
+
