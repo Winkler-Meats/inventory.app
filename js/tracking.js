@@ -8,7 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const trackingLogBody = document.getElementById("tracking-log-body");
   const exportExcelBtn = document.getElementById("export-excel-btn");
 
+  // Filter input elements
+  const filterTagNo = document.getElementById("filter-tag-no");
+  const filterCategory = document.getElementById("filter-category");
+  const filterPartNo = document.getElementById("filter-part-no");
+  const filterDescription = document.getElementById("filter-description");
+
   let inventoryCounts = [];
+  let allCounts = []; // Store all counts for filtering
 
   /**
    * Loads the inventory count data from local storage.
@@ -16,8 +23,62 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadInventoryCounts() {
     const savedData = localStorage.getItem("inventoryCounts");
     if (savedData) {
-      inventoryCounts = JSON.parse(savedData);
-      renderTrackingLog(inventoryCounts);
+      allCounts = JSON.parse(savedData);
+      inventoryCounts = allCounts; // Set initial view to all counts
+      populateFilterDropdowns();
+      applyFilters(); // Apply any existing filters
+    }
+  }
+
+  /**
+   * Filters the inventory counts based on the search input fields.
+   */
+  function applyFilters() {
+    const tagNo = filterTagNo ? filterTagNo.value.toLowerCase() : "";
+    const category = filterCategory ? filterCategory.value.toLowerCase() : "";
+    const partNo = filterPartNo ? filterPartNo.value.toLowerCase() : "";
+    const description = filterDescription ? filterDescription.value.toLowerCase() : "";
+
+    const filteredData = allCounts.filter((count) => {
+      const itemTagNo = (count["Tag #"] || "").toLowerCase();
+      const itemCategory = (count.Category || "").toLowerCase();
+      const itemPartNo = (count["Part #"] || "").toLowerCase();
+      const itemDescription = (count.Description || "").toLowerCase();
+
+      return (
+        itemTagNo.includes(tagNo) &&
+        itemCategory.includes(category) &&
+        itemPartNo.includes(partNo) &&
+        itemDescription.includes(description)
+      );
+    });
+
+    inventoryCounts = filteredData;
+    renderTrackingLog(filteredData);
+  }
+
+  /**
+   * Populates the filter dropdowns.
+   */
+  function populateFilterDropdowns() {
+    if (!filterCategory) return;
+
+    filterCategory.innerHTML = "";
+
+    // Add a blank default option
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "All Categories";
+    filterCategory.appendChild(defaultOption);
+
+    // Populate categories from config
+    if (typeof CATEGORY_LIST !== 'undefined') {
+      CATEGORY_LIST.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        filterCategory.appendChild(option);
+      });
     }
   }
 
@@ -35,12 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const row = document.createElement("tr");
 
       row.innerHTML = `
+        <td class="tag-uom-qty-col">${count["Tag #"] || ""}</td>
         <td>${count.Category || ""}</td>
         <td>${count["Part #"] || ""}</td>
         <td>${count.Description || ""}</td>
         <td>${count.Location || ""}</td>
-        <td>${count.UOM || ""}</td>
-        <td>${count.Quantity}</td>
+        <td class="tag-uom-qty-col">${count.UOM || ""}</td>
+        <td class="tag-uom-qty-col">${count.Quantity}</td>
         <td>${count.Notes || ""}</td>
         <td>${
           count.Timestamp ? new Date(count.Timestamp).toLocaleString() : ""
@@ -85,6 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
     exportExcelBtn.addEventListener("click", exportTrackingLog);
   }
 
+  // Add filter event listeners
+  if (filterTagNo) {
+    filterTagNo.addEventListener("keyup", applyFilters);
+  }
+  if (filterCategory) {
+    filterCategory.addEventListener("change", applyFilters);
+  }
+  if (filterPartNo) {
+    filterPartNo.addEventListener("keyup", applyFilters);
+  }
+  if (filterDescription) {
+    filterDescription.addEventListener("keyup", applyFilters);
+  }
+
   if (trackingLogBody) {
     trackingLogBody.addEventListener("click", (event) => {
       const target = event.target;
@@ -97,11 +173,11 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- Enter Edit Mode ---
         const cells = row.cells; // Use the native cells collection
 
-        // Get current values from the correct indices
-        const location = cells[3].textContent;
-        const uom = cells[4].textContent;
-        const quantity = cells[5].textContent;
-        const notes = cells[6].textContent;
+        // Get current values from the correct indices (Tag # is now first at index 0)
+        const location = cells[4].textContent;
+        const uom = cells[5].textContent;
+        const quantity = cells[6].textContent;
+        const notes = cells[7].textContent;
 
         // Create select options
         const uomOptions = UOM_LIST.map(
@@ -116,10 +192,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ).join("");
 
         // Replace cell content with input fields using correct indices
-        cells[3].innerHTML = `<select class="edit-location">${locationOptions}</select>`;
-        cells[4].innerHTML = `<select class="edit-uom">${uomOptions}</select>`;
-        cells[5].innerHTML = `<input type="number" class="edit-quantity" value="${quantity}">`;
-        cells[6].innerHTML = `<input type="text" class="edit-notes" value="${notes}">`;
+        cells[4].innerHTML = `<select class="edit-location">${locationOptions}</select>`;
+        cells[5].innerHTML = `<select class="edit-uom">${uomOptions}</select>`;
+        cells[6].innerHTML = `<input type="number" class="edit-quantity" value="${quantity}">`;
+        cells[7].innerHTML = `<input type="text" class="edit-notes" value="${notes}">`;
 
         // --- Actions Cell ---
         const actionsCell = cells[cells.length - 1]; // Always the last cell
