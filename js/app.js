@@ -122,6 +122,9 @@ function renderTable(data) {
       .join("");
 
     row.innerHTML = `
+      <td class="tag-uom-qty-col"><input type="text" class="tag-input" data-id="${
+        item["Part #"]
+      }" value="${item["Tag #"] || ""}"></td>
       <td>${item["Part #"] || ""}</td>
       <td>${item.Description || ""}</td>
       <td>${item.Category || ""}</td>
@@ -130,12 +133,12 @@ function renderTable(data) {
           ${locationOptionsHtml}
         </select>
       </td>
-      <td>
+      <td class="tag-uom-qty-col">
         <select class="uom-select" data-id="${item["Part #"]}">
           ${uomOptionsHtml}
         </select>
       </td>
-      <td><input type="number" class="quantity-input" data-id="${
+      <td class="tag-uom-qty-col"><input type="number" class="quantity-input" data-id="${
         item["Part #"]
       }" value="${item.Quantity || ""}"></td>
       <td class="location-notes-col"><input type="text" class="notes-input" data-id="${
@@ -227,6 +230,7 @@ itemListBody.addEventListener("click", (event) => {
   if (target.classList.contains("submit-count-btn")) {
     const partNo = target.dataset.id;
     const row = target.closest("tr");
+    const tagInput = row.querySelector(".tag-input");
     const quantityInput = row.querySelector(".quantity-input");
     const uomSelect = row.querySelector(".uom-select");
     const locationSelect = row.querySelector(".location-select");
@@ -235,10 +239,15 @@ itemListBody.addEventListener("click", (event) => {
     // --- Validation Logic ---
     let isValid = true;
     hideNotification(); // Clear previous notifications
+    tagInput.classList.remove("input-error");
     quantityInput.classList.remove("input-error");
     uomSelect.classList.remove("input-error");
     locationSelect.classList.remove("input-error");
 
+    if (!tagInput.value || !tagInput.value.trim()) {
+      tagInput.classList.add("input-error");
+      isValid = false;
+    }
     if (!locationSelect.value) {
       locationSelect.classList.add("input-error");
       isValid = false;
@@ -254,7 +263,7 @@ itemListBody.addEventListener("click", (event) => {
 
     if (!isValid) {
       showNotification(
-        "Please fill out all required fields (Location, UOM, and QTY)."
+        "Please fill out all required fields (Tag #, Location, UOM, and QTY)."
       );
       return; // Stop the submission
     }
@@ -271,6 +280,7 @@ itemListBody.addEventListener("click", (event) => {
 
     const newEntry = {
       ...item,
+      "Tag #": tagInput.value.trim(),
       Quantity: quantity,
       UOM: uomSelect.value,
       Location: locationSelect.value,
@@ -290,6 +300,7 @@ itemListBody.addEventListener("click", (event) => {
     }, 1500);
 
     // Clear the input fields for the submitted row
+    tagInput.value = "";
     quantityInput.value = "";
     notesInput.value = "";
     locationSelect.selectedIndex = 0; // Reset to the default blank option
@@ -302,6 +313,7 @@ itemListBody.addEventListener("click", (event) => {
 itemListBody.addEventListener("input", (event) => {
   const target = event.target;
   if (
+    target.classList.contains("tag-input") ||
     target.classList.contains("quantity-input") ||
     target.classList.contains("notes-input")
   ) {
@@ -425,6 +437,7 @@ addItemForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const requiredFields = [
+    "tagNo",
     "description",
     "modal-location",
     "modal-uom",
@@ -464,6 +477,7 @@ addItemForm.addEventListener("submit", (event) => {
   }
 
   const newItem = {
+    "Tag #": document.getElementById("tagNo").value.trim(),
     "Part #": document.getElementById("partNo").value,
     Description: document.getElementById("description").value.trim(),
     Category: document.getElementById("modal-category").value,
@@ -572,6 +586,7 @@ function populateFilterDropdowns() {
 // --- Real-time Validation ---
 // As a user types into a required field, remove the .is-required class from it.
 const fieldsToValidate = [
+  "tagNo",
   "description",
   "modal-location",
   "modal-uom",
