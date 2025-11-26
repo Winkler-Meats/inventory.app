@@ -169,6 +169,12 @@ body {
   min-width: 150px; /* Shared width for Location and Notes */
 }
 
+.item-list-table .tag-uom-qty-col {
+  width: 100px; /* Consistent width for Tag #, UOM, and Quantity columns */
+  min-width: 100px;
+  max-width: 100px;
+}
+
 .item-list-table input[type="text"],
 .item-list-table input[type="number"],
 .item-list-table select {
@@ -179,12 +185,16 @@ body {
   height: 45px; /* Increased height for better tablet interaction */
 }
 
+.item-list-table .tag-input {
+  width: 100%; /* Tag # input fills its column */
+}
+
 .item-list-table .uom-select {
-  width: 75px; /* Set width for UoM field as per user request */
+  width: 100%; /* UOM select fills its column */
 }
 
 .item-list-table .quantity-input {
-  width: 150px; /* Set width for quantity field as per user request */
+  width: 100%; /* Quantity input fills its column */
 }
 
 .input-error {
@@ -387,10 +397,45 @@ label.is-required {
 }
 
 /* Specific styles for the tracking page */
+#tracking-controls {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+}
+
 #tracking-controls .control-panel-buttons {
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem; /* This adds the space above the table */
+  margin-bottom: 1rem; /* This adds the space above the search filters */
+}
+
+#tracking-controls .search-filter-panel {
+  margin-top: 1rem;
+}
+
+#tracking-controls .search-filter-panel .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+#tracking-controls .search-filter-panel input[type="text"],
+#tracking-controls .search-filter-panel select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #dce4e8;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#tracking-controls .search-filter-panel input[type="text"]:focus,
+#tracking-controls .search-filter-panel select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
 
