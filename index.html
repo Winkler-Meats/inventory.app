@@ -45,12 +45,13 @@
         <table class="item-list-table">
           <thead>
             <tr>
+              <th class="tag-uom-qty-col">Tag #</th>
               <th>Part #</th>
               <th>Description</th>
               <th>Category</th>
               <th class="location-notes-col">Location</th>
-              <th>UOM</th>
-              <th>Quantity</th>
+              <th class="tag-uom-qty-col">UOM</th>
+              <th class="tag-uom-qty-col">Quantity</th>
               <th class="location-notes-col">Notes</th>
               <th>Actions</th>
             </tr>
@@ -68,6 +69,10 @@
         <h2>Add New Item</h2>
         <form id="addItemForm">
           <p id="modal-error-message" class="error-message"></p>
+          <div class="form-group">
+            <label for="tagNo">Tag #</label>
+            <input type="text" id="tagNo" placeholder="Tag #" />
+          </div>
           <div class="form-group">
             <label for="partNo">Part #</label>
             <input type="text" id="partNo" placeholder="Part #" />
