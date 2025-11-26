@@ -21,18 +21,27 @@
             Export to Excel
           </button>
         </div>
+        <div class="search-filter-panel">
+          <div class="form-grid">
+            <input type="text" id="filter-tag-no" placeholder="Tag #" />
+            <select id="filter-category" title="Filter by category"></select>
+            <input type="text" id="filter-part-no" placeholder="Part #" />
+            <input type="text" id="filter-description" placeholder="Description" />
+          </div>
+        </div>
       </section>
 
       <section class="item-list-container">
         <table class="item-list-table">
           <thead>
             <tr>
+              <th class="tag-uom-qty-col">Tag #</th>
               <th>Category</th>
               <th>Part #</th>
               <th>Description</th>
               <th>Location</th>
-              <th>UOM</th>
-              <th>Quantity</th>
+              <th class="tag-uom-qty-col">UOM</th>
+              <th class="tag-uom-qty-col">Quantity</th>
               <th>Notes</th>
               <th>Timestamp</th>
               <th>Actions</th>
